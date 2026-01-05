@@ -1,17 +1,48 @@
+// import { Route } from '../../domain/entities/Route';
+// import { EnergyUsed } from '../../domain/value-objects/EnergyUsed';
+// import { ComplianceValue } from '../../domain/value-objects/ComplianceValue';
+// import { GHGIntensity } from '../../domain/value-objects/GHGIntensity';
+// import { ComplianceBalance } from '../../domain/entities/ComplianceBalance';
+
+// export class ComputeComplianceBalance {
+//   private readonly targetIntensity: GHGIntensity;
+
+//   constructor(targetIntensity: GHGIntensity) {
+//     this.targetIntensity = targetIntensity;
+//   }
+
+//   execute(route: Route): ComplianceBalance {
+//     const energy = new EnergyUsed(route.fuelConsumption);
+
+//     const complianceValue = ComplianceValue.calculate({
+//       target: this.targetIntensity,
+//       actual: route.ghgIntensity,
+//       energy,
+//     });
+
+//     return new ComplianceBalance({
+//       shipId: route.routeId,
+//       year: route.year,
+//       value: complianceValue.value,
+//     });
+//   }
+// }
+
+
 import { Route } from '../../domain/entities/Route';
 import { EnergyUsed } from '../../domain/value-objects/EnergyUsed';
 import { ComplianceValue } from '../../domain/value-objects/ComplianceValue';
 import { GHGIntensity } from '../../domain/value-objects/GHGIntensity';
 import { ComplianceBalance } from '../../domain/entities/ComplianceBalance';
+import { ComplianceRepository } from '../../ports/outbound/ComplianceRepository';
 
 export class ComputeComplianceBalance {
-  private readonly targetIntensity: GHGIntensity;
+  constructor(
+    private readonly targetIntensity: GHGIntensity,
+    private readonly repository: ComplianceRepository
+  ) {}
 
-  constructor(targetIntensity: GHGIntensity) {
-    this.targetIntensity = targetIntensity;
-  }
-
-  execute(route: Route): ComplianceBalance {
+  async execute(route: Route): Promise<ComplianceBalance> {
     const energy = new EnergyUsed(route.fuelConsumption);
 
     const complianceValue = ComplianceValue.calculate({
@@ -20,10 +51,15 @@ export class ComputeComplianceBalance {
       energy,
     });
 
-    return new ComplianceBalance({
+    const balance = new ComplianceBalance({
       shipId: route.routeId,
       year: route.year,
       value: complianceValue.value,
     });
+
+    await this.repository.save(balance);
+
+    return balance;
   }
 }
+

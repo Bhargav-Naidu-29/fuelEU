@@ -7,43 +7,42 @@ export class PrismaComplianceRepository implements ComplianceRepository {
   async save(balance: ComplianceBalance): Promise<void> {
     await prisma.shipCompliance.upsert({
       where: {
-        shipId_year: {
+        shipIdYear: {
           shipId: balance.shipId,
           year: balance.year.value,
         },
       },
       update: {
-        value: balance.value,
+        cbGco2eq: balance.value,
       },
       create: {
         shipId: balance.shipId,
         year: balance.year.value,
-        value: balance.value,
+        cbGco2eq: balance.value,
       },
     });
   }
 
   async findByShipAndYear(
     shipId: string,
-    year: number,
+    year: Year
   ): Promise<ComplianceBalance | null> {
     const record = await prisma.shipCompliance.findUnique({
       where: {
-        shipId_year: {
-          shipId,
-          year,
+        shipIdYear: {
+          shipId: shipId,
+          year: year.value,
         },
       },
     });
-
-    if (!record) {
-      return null;
-    }
-
+  
+    if (!record) return null;
+  
     return new ComplianceBalance({
       shipId: record.shipId,
       year: new Year(record.year),
-      value: record.value,
+      value: record.cbGco2eq,
     });
   }
+  
 }
