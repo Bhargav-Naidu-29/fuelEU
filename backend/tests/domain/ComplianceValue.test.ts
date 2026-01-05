@@ -13,4 +13,3 @@ describe('ComplianceValue', () => {
     expect(cv.isSurplus()).toBe(true);
   });
 });
-

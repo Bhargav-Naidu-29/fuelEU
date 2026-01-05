@@ -4,4 +4,3 @@
 export interface OutboundPort {
   // Placeholder for outbound port interface
 }
-

@@ -10,4 +10,3 @@ describe('EnergyUsed value object', () => {
     expect(() => new EnergyUsed(-100)).toThrow();
   });
 });
-

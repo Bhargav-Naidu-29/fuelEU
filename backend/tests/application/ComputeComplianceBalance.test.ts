@@ -5,9 +5,7 @@ import { GHGIntensity } from '@/core/domain/value-objects/GHGIntensity';
 
 describe('ComputeComplianceBalance', () => {
   it('computes compliance balance for route', () => {
-    const useCase = new ComputeComplianceBalance(
-      new GHGIntensity(89.3368)
-    );
+    const useCase = new ComputeComplianceBalance(new GHGIntensity(89.3368));
 
     const route = new Route({
       routeId: 'R001',
@@ -17,7 +15,7 @@ describe('ComputeComplianceBalance', () => {
       ghgIntensity: new GHGIntensity(91),
       fuelConsumption: 1000,
       distance: 10000,
-      totalEmissions: 4000
+      totalEmissions: 4000,
     });
 
     const cb = useCase.execute(route);
@@ -25,4 +23,3 @@ describe('ComputeComplianceBalance', () => {
     expect(cb.value).toBeLessThan(0);
   });
 });
-

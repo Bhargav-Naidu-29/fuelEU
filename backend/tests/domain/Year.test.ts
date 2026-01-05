@@ -10,4 +10,3 @@ describe('Year value object', () => {
     expect(() => new Year(2010)).toThrow();
   });
 });
-

@@ -17,13 +17,13 @@ export class ComputeComplianceBalance {
     const complianceValue = ComplianceValue.calculate({
       target: this.targetIntensity,
       actual: route.ghgIntensity,
-      energy
+      energy,
     });
 
     return new ComplianceBalance({
       shipId: route.routeId,
       year: route.year,
-      value: complianceValue.value
+      value: complianceValue.value,
     });
   }
 }

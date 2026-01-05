@@ -2,16 +2,9 @@ import { Year } from '../value-objects/Year';
 import { GHGIntensity } from '../value-objects/GHGIntensity';
 import { InvalidGHGIntensityError } from '../errors/InvalidGHGIntensityError';
 
-export type VesselType =
-  | 'Container'
-  | 'BulkCarrier'
-  | 'Tanker'
-  | 'RoRo';
+export type VesselType = 'Container' | 'BulkCarrier' | 'Tanker' | 'RoRo';
 
-export type FuelType =
-  | 'HFO'
-  | 'LNG'
-  | 'MGO';
+export type FuelType = 'HFO' | 'LNG' | 'MGO';
 
 export class Route {
   private readonly _routeId: string;
@@ -62,13 +55,31 @@ export class Route {
     this._isBaseline = params.isBaseline ?? false;
   }
 
-  get routeId(): string { return this._routeId; }
-  get vesselType(): VesselType { return this._vesselType; }
-  get fuelType(): FuelType { return this._fuelType; }
-  get year(): Year { return this._year; }
-  get ghgIntensity(): GHGIntensity { return this._ghgIntensity; }
-  get fuelConsumption(): number { return this._fuelConsumption; }
-  get distance(): number { return this._distance; }
-  get totalEmissions(): number { return this._totalEmissions; }
-  get isBaseline(): boolean { return this._isBaseline; }
+  get routeId(): string {
+    return this._routeId;
+  }
+  get vesselType(): VesselType {
+    return this._vesselType;
+  }
+  get fuelType(): FuelType {
+    return this._fuelType;
+  }
+  get year(): Year {
+    return this._year;
+  }
+  get ghgIntensity(): GHGIntensity {
+    return this._ghgIntensity;
+  }
+  get fuelConsumption(): number {
+    return this._fuelConsumption;
+  }
+  get distance(): number {
+    return this._distance;
+  }
+  get totalEmissions(): number {
+    return this._totalEmissions;
+  }
+  get isBaseline(): boolean {
+    return this._isBaseline;
+  }
 }

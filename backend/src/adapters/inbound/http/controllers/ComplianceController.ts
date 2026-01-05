@@ -5,9 +5,7 @@ import { GHGIntensity } from '@/core/domain/value-objects/GHGIntensity';
 import { Route } from '@/core/domain/entities/Route';
 
 export class ComplianceController {
-  constructor(
-    private readonly computeCB: ComputeComplianceBalance
-  ) {}
+  constructor(private readonly computeCB: ComputeComplianceBalance) {}
 
   compute = (req: Request, res: Response) => {
     const route = new Route({
@@ -18,7 +16,7 @@ export class ComplianceController {
       ghgIntensity: new GHGIntensity(req.body.ghgIntensity),
       fuelConsumption: req.body.fuelConsumption,
       distance: req.body.distance,
-      totalEmissions: req.body.totalEmissions
+      totalEmissions: req.body.totalEmissions,
     });
 
     const cb = this.computeCB.execute(route);
@@ -26,7 +24,7 @@ export class ComplianceController {
     res.json({
       shipId: cb.shipId,
       year: cb.year.value,
-      value: cb.value
+      value: cb.value,
     });
   };
 }

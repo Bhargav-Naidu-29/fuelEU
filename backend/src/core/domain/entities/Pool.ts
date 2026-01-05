@@ -15,6 +15,10 @@ export class Pool {
     this._members = members;
   }
 
-  get year() { return this._year; }
-  get members() { return [...this._members]; }
+  get year() {
+    return this._year;
+  }
+  get members() {
+    return [...this._members];
+  }
 }

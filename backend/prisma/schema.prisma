@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,5 +7,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// TODO: Add database models here
+model Route {
+  id              Int     @id @default(autoincrement())
+  routeId         String
+  vesselType      String
+  fuelType        String
+  year            Int
+  ghgIntensity    Float
+  fuelConsumption Float
+  distance        Float
+  totalEmissions  Float
+  isBaseline      Boolean @default(false)
 
+  @@unique([routeId, year], name: "routeIdYear")
+  @@map("routes")
+}
+
+model ShipCompliance {
+  id       Int    @id @default(autoincrement())
+  shipId   String
+  year     Int
+  cbGco2eq Float
+
+  @@unique([shipId, year], name: "shipIdYear")
+  @@map("ship_compliance")
+}
+
+model BankEntry {
+  id           String @id @default(uuid())
+  shipId       String
+  year         Int
+  amountGco2eq Float
+
+  @@map("bank_entries")
+}
+
+model Pool {
+  id        Int          @id @default(autoincrement())
+  year      Int
+  createdAt DateTime     @default(now())
+  members   PoolMember[]
+
+  @@map("pools")
+}
+
+model PoolMember {
+  id       Int    @id @default(autoincrement())
+  poolId   Int
+  shipId   String
+  cbBefore Float
+  cbAfter  Float
+
+  pool Pool @relation(fields: [poolId], references: [id], onDelete: Cascade)
+
+  @@map("pool_members")
+}

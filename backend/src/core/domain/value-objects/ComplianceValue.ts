@@ -42,13 +42,12 @@ export class ComplianceValue {
   }
 }
 
-
 // /**
 //  * gCO2eq compliance balance value.
 //  */
 // export class ComplianceValue {
 //     readonly value: number;
-  
+
 //     constructor(
 //       target: GHGIntensity,
 //       actual: GHGIntensity,
@@ -57,4 +56,3 @@ export class ComplianceValue {
 //       this.value = (target.value - actual.value) * energy.value;
 //     }
 //   }
-  

@@ -7,9 +7,7 @@ export function createApp() {
   const app = express();
   app.use(express.json());
 
-  const computeCB = new ComputeComplianceBalance(
-    new GHGIntensity(89.3368)
-  );
+  const computeCB = new ComputeComplianceBalance(new GHGIntensity(89.3368));
 
   const controller = new ComplianceController(computeCB);
 
