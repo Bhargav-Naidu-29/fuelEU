@@ -10,6 +10,13 @@ import { BankingController } from '@/adapters/inbound/http/controllers/BankingCo
 import { CreatePool } from '@/core/application/use-cases/CreatePool';
 import { PrismaPoolingRepository } from '@/adapters/outbound/postgres/repositories/PrismaPoolingRepository';
 import { PoolingController } from '@/adapters/inbound/http/controllers/PoolingController';
+import { GetBankingRecords } from '@/core/application/use-cases/GetBankingRecords';
+import { PrismaRouteRepository } from '@/adapters/outbound/postgres/repositories/PrismaRouteRepository';
+import { GetRoutes } from '@/core/application/use-cases/GetRoutes';
+import { SetBaselineRoute } from '@/core/application/use-cases/SetBaselineRoute';
+import { CompareRoutes } from '@/core/application/use-cases/CompareRoutes';
+import { RoutesController } from '@/adapters/inbound/http/controllers/RoutesController';
+import { ComputeComplianceFromRoutes } from '@/core/application/use-cases/ComputeComplianceFromRoutes';
 
 export function createApp() {
   const app = express();
@@ -27,25 +34,69 @@ export function createApp() {
   const poolingController = new PoolingController(createPoolUC);
   const bankSurplusUC = new BankSurplus(bankingRepo);
   const applyBankedUC = new ApplyBankedSurplus(bankingRepo);
+  const getBankingRecordsUC = new GetBankingRecords(bankingRepo);
+
+  const routeRepo = new PrismaRouteRepository();
+  const getRoutesUC = new GetRoutes(routeRepo);
+  const setBaselineUC = new SetBaselineRoute(routeRepo);
+  const compareRoutesUC = new CompareRoutes(routeRepo);
+  const routesController = new RoutesController(getRoutesUC, setBaselineUC, compareRoutesUC);
+
+  const computeFromRoutes = new ComputeComplianceFromRoutes(
+    new GHGIntensity(89.3368),
+    routeRepo,
+    repository,
+  );
 
   const bankingController = new BankingController(
     repository,
     bankSurplusUC,
     applyBankedUC,
+    getBankingRecordsUC,
   );
-  const controller = new ComplianceController(computeCB);
+  const controller = new ComplianceController(
+    computeCB,
+    computeFromRoutes,
+    repository,
+    bankingRepo,
+  );
+
 
   app.post('/compliance/cb', (req, res, next) => {
     void controller.compute(req, res).catch(next);
   });
+  app.get('/compliance/cb', (req, res, next) => {
+    void controller.getCompute(req as any, res).catch(next);
+  });
+  app.get('/compliance/adjusted-cb', (req, res, next) => {
+    void controller.getAdjusted(req as any, res).catch(next);
+  });
+
+
   app.post('/banking/bank', (req, res, next) => {
     void bankingController.bank(req, res).catch(next);
   });
   app.post('/banking/apply', (req, res, next) => {
     void bankingController.apply(req, res).catch(next);
   });
+  app.get('/banking/records', (req, res, next) => {
+    void bankingController.getRecords(req as any, res).catch(next);
+  });
+
   app.post('/pools', (req, res, next) => {
     void poolingController.create(req, res).catch(next);
   });
+
+  app.get('/routes', (req, res, next) => {
+    void routesController.getAll(req, res).catch(next);
+  });
+  app.post('/routes/:routeId/baseline', (req, res, next) => {
+    void routesController.setBaseline(req, res).catch(next);
+  });
+  app.get('/routes/comparison', (req, res, next) => {
+    void routesController.compare(req, res).catch(next);
+  });
+
   return app;
 }
+

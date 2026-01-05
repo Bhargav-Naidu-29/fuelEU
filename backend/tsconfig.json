@@ -2,13 +2,18 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "commonjs",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "outDir": "./dist",
-    "rootDir": "./src",
     "baseUrl": "src",
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "paths": {
-      "@/*": ["*"]
+      "@/*": [
+        "*"
+      ]
     },
     "strict": true,
     "esModuleInterop": true,
@@ -31,7 +36,14 @@
     "noImplicitThis": true,
     "alwaysStrict": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "tests"]
+  "include": [
+    "src/**/*",
+    "prisma/**/*",
+    "verify_endpoints.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests"
+  ]
 }
-

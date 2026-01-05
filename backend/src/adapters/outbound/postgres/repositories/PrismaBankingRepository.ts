@@ -41,4 +41,26 @@ export class PrismaBankingRepository implements BankingRepository {
       },
     });
   }
+
+  async findRecordsByShipAndYear(
+    shipId: string,
+    year: Year,
+  ): Promise<
+    {
+      id: string;
+      shipId: string;
+      year: number;
+      amountGco2eq: number;
+    }[]
+  > {
+    const records = await prisma.bankEntry.findMany({
+      where: {
+        shipId,
+        year: year.value,
+      },
+    });
+    return records;
+  }
+
 }
+

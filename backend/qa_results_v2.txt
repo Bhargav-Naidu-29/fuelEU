@@ -1,0 +1,196 @@
+[INFO] 04:15:45 ts-node-dev ver. 2.0.0 (using ts-node ver. 10.9.2, typescript ver. 5.9.3)
+Starting QA Validation...
+
+---------------------------------------------------
+Endpoint: GET /routes
+Request URL: /routes
+Status Code: 200
+Response: [
+  {
+    "routeId": "R004",
+    "year": 2025,
+    "vesselType": "RoRo",
+    "fuelType": "HFO",
+    "ghgIntensity": 89.2,
+    "fuelConsumption": 4900,
+    "distance": 11800,
+    "totalEmissions": 4300,
+    "isBaseline": false
+  },
+  {
+    "routeId": "R005",
+    "year": 2025,
+    "vesselType": "Container",
+    "fuelType": "LNG",
+    "ghgIntensity": 90.5,
+    "fuelConsumption": 4950,
+    "distance": 11900,
+    "totalEmissions": 4400,
+    "isBaseline": false
+  },
+  {
+    "routeId": "R001",
+    "year": 2024,
+    "vesselType": "Container",
+    "fuelType": "HFO",
+    "ghgIntensity": 91,
+    "fuelConsumption": 5000,
+    "distance": 12000,
+    "totalEmissions": 4500,
+    "isBaseline": false
+  },
+  {
+    "routeId": "R003",
+    "year": 2024,
+    "vesselType": "Tanker",
+    "fuelType": "MGO",
+    "ghgIntensity": 93.5,
+    "fuelConsumption": 5100,
+    "distance": 12500,
+    "totalEmissions": 4700,
+    "isBaseline": false
+  },
+  {
+    "routeId": "R002",
+    "year": 2024,
+    "vesselType": "BulkCarrier",
+    "fuelType": "LNG",
+    "ghgIntensity": 88,
+    "fuelConsumption": 4800,
+    "distance": 11500,
+    "totalEmissions": 4200,
+    "isBaseline": true
+  }
+]
+Result: ✅ PASS
+---------------------------------------------------
+
+---------------------------------------------------
+Endpoint: POST /routes/:routeId/baseline
+Request URL: /routes/R002/baseline
+Request Body: {"year":2024}
+Status Code: 200
+Response: "OK"
+Result: ✅ PASS
+---------------------------------------------------
+
+---------------------------------------------------
+Endpoint: GET /routes/comparison
+Request URL: /routes/comparison?routeId=R001&year=2024
+Status Code: 200
+Response: {
+  "route": {
+    "routeId": "R001",
+    "ghgIntensity": 91
+  },
+  "baseline": {
+    "routeId": "R002",
+    "ghgIntensity": 88
+  },
+  "comparison": {
+    "percentDiff": 3.409090909090917,
+    "compliant": false
+  }
+}
+Result: ✅ PASS
+---------------------------------------------------
+
+---------------------------------------------------
+Endpoint: GET /compliance/cb
+Request URL: /compliance/cb?shipId=R001&year=2024
+Status Code: 200
+Response: {
+  "shipId": "R001",
+  "year": 2024,
+  "value": -340956000.00000066
+}
+Result: ✅ PASS
+---------------------------------------------------
+
+---------------------------------------------------
+Endpoint: GET /compliance/adjusted-cb
+Request URL: /compliance/adjusted-cb?shipId=R001&year=2024
+Status Code: 200
+Response: {
+  "shipId": "R001",
+  "year": 2024,
+  "originalValue": -340956000.0000007,
+  "adjustedValue": -340956000.0000007
+}
+Result: ✅ PASS
+---------------------------------------------------
+
+---------------------------------------------------
+Endpoint: POST /banking/bank
+Request URL: /banking/bank
+Request Body: {"shipId":"R002","year":2024,"amount":100}
+Status Code: 200
+Response: {
+  "cb_before": 263082239.9999993,
+  "banked": 100,
+  "cb_after": 263082239.9999993
+}
+Result: ✅ PASS
+---------------------------------------------------
+
+---------------------------------------------------
+Endpoint: POST /banking/apply
+Request URL: /banking/apply
+Request Body: {"shipId":"R001","year":2024,"amount":50}
+Status Code: 409
+Response: {
+  "error": "Insufficient banked surplus available"
+}
+Result: ❌ FAIL
+Failure Reason: Expected failure if no banked amounts
+---------------------------------------------------
+
+---------------------------------------------------
+Endpoint: GET /banking/records
+Request URL: /banking/records?shipId=R002&year=2024
+Status Code: 200
+Response: [
+  {
+    "id": "6ee22875-8059-427e-83cf-695d9eeb3e05",
+    "shipId": "R002",
+    "year": 2024,
+    "amountGco2eq": 100
+  },
+  {
+    "id": "fd50866a-3308-4b12-a815-c02a9f962b3b",
+    "shipId": "R002",
+    "year": 2024,
+    "amountGco2eq": 100
+  },
+  {
+    "id": "a9766913-177d-4768-89f8-ab0842789020",
+    "shipId": "R002",
+    "year": 2024,
+    "amountGco2eq": 100
+  },
+  {
+    "id": "5cf0faf1-bc6e-46ec-aa04-138f4517950a",
+    "shipId": "R002",
+    "year": 2024,
+    "amountGco2eq": 100
+  },
+  {
+    "id": "3dd9b191-a5ab-4c30-85e1-f5ac53ccd2a5",
+    "shipId": "R002",
+    "year": 2024,
+    "amountGco2eq": 100
+  }
+]
+Result: ✅ PASS
+---------------------------------------------------
+
+---------------------------------------------------
+Endpoint: POST /pools
+Request URL: /pools
+Request Body: {"year":2024,"members":[{"shipId":"R001","cb":-340956000.00000066},{"shipId":"R002","cb":263082239.99999934}]}
+Status Code: 500
+Response: "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Error: Pool sum must be non-negative<br> &nbsp; &nbsp;at CreatePool.execute (C:\\Users\\palav\\OneDrive\\Desktop\\dev\\fuelEU\\backend\\src\\core\\application\\use-cases\\CreatePool.ts:17:13)<br> &nbsp; &nbsp;at PoolingController.create (C:\\Users\\palav\\OneDrive\\Desktop\\dev\\fuelEU\\backend\\src\\adapters\\inbound\\http\\controllers\\PoolingController.ts:19:40)<br> &nbsp; &nbsp;at C:\\Users\\palav\\OneDrive\\Desktop\\dev\\fuelEU\\backend\\src\\infrastructure\\server\\app.ts:87:28<br> &nbsp; &nbsp;at Layer.handle [as handle_request] (C:\\Users\\palav\\OneDrive\\Desktop\\dev\\fuelEU\\backend\\node_modules\\express\\lib\\router\\layer.js:95:5)<br> &nbsp; &nbsp;at next (C:\\Users\\palav\\OneDrive\\Desktop\\dev\\fuelEU\\backend\\node_modules\\express\\lib\\router\\route.js:149:13)<br> &nbsp; &nbsp;at Route.dispatch (C:\\Users\\palav\\OneDrive\\Desktop\\dev\\fuelEU\\backend\\node_modules\\express\\lib\\router\\route.js:119:3)<br> &nbsp; &nbsp;at Layer.handle [as handle_request] (C:\\Users\\palav\\OneDrive\\Desktop\\dev\\fuelEU\\backend\\node_modules\\express\\lib\\router\\layer.js:95:5)<br> &nbsp; &nbsp;at C:\\Users\\palav\\OneDrive\\Desktop\\dev\\fuelEU\\backend\\node_modules\\express\\lib\\router\\index.js:284:15<br> &nbsp; &nbsp;at Function.process_params (C:\\Users\\palav\\OneDrive\\Desktop\\dev\\fuelEU\\backend\\node_modules\\express\\lib\\router\\index.js:346:12)<br> &nbsp; &nbsp;at next (C:\\Users\\palav\\OneDrive\\Desktop\\dev\\fuelEU\\backend\\node_modules\\express\\lib\\router\\index.js:280:10)</pre>\n</body>\n</html>\n"
+Result: ✅ PASS
+---------------------------------------------------
+
+Summary: 8/9 - 89% Passing
