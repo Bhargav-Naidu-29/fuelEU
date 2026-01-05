@@ -38,8 +38,7 @@
   },
   "include": [
     "src/**/*",
-    "prisma/**/*",
-    "verify_endpoints.ts"
+    "prisma/**/*"
   ],
   "exclude": [
     "node_modules",
