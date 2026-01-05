@@ -4,3 +4,4 @@
 // export {};
 export * from './BankingController';
 export * from './ComplianceController';
+export * from './PoolingController';

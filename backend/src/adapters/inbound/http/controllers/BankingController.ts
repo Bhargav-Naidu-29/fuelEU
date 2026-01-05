@@ -4,19 +4,31 @@ import { ApplyBankedSurplus } from '@/core/application/use-cases/ApplyBankedSurp
 import { ComplianceRepository } from '@/core/ports/outbound/ComplianceRepository';
 import { Year } from '@/core/domain/value-objects/Year';
 
+interface BankRequest {
+  shipId: string;
+  year: number;
+  amount: number;
+}
+
+interface ApplyRequest {
+  shipId: string;
+  year: number;
+  amount: number;
+}
+
 export class BankingController {
   constructor(
     private readonly complianceRepo: ComplianceRepository,
     private readonly bankSurplus: BankSurplus,
-    private readonly applyBanked: ApplyBankedSurplus
+    private readonly applyBanked: ApplyBankedSurplus,
   ) {}
 
-  bank = async (req: Request, res: Response) => {
+  bank = async (req: Request<unknown, unknown, BankRequest>, res: Response) => {
     const { shipId, year, amount } = req.body;
 
     const cb = await this.complianceRepo.findByShipAndYear(
       shipId,
-      new Year(year)
+      new Year(year),
     );
 
     if (!cb) {
@@ -30,14 +42,18 @@ export class BankingController {
       banked: amount,
       cb_after: cb.value,
     });
+    return;
   };
 
-  apply = async (req: Request, res: Response) => {
+  apply = async (
+    req: Request<unknown, unknown, ApplyRequest>,
+    res: Response,
+  ) => {
     const { shipId, year, amount } = req.body;
 
     const cb = await this.complianceRepo.findByShipAndYear(
       shipId,
-      new Year(year)
+      new Year(year),
     );
 
     if (!cb) {
@@ -51,5 +67,6 @@ export class BankingController {
       applied: amount,
       cb_after: cb.value + amount,
     });
+    return;
   };
 }

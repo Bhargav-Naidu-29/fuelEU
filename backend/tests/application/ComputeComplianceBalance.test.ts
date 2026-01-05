@@ -2,10 +2,23 @@ import { ComputeComplianceBalance } from '@/core/application/use-cases/ComputeCo
 import { Route } from '@/core/domain/entities/Route';
 import { Year } from '@/core/domain/value-objects/Year';
 import { GHGIntensity } from '@/core/domain/value-objects/GHGIntensity';
+import { ComplianceRepository } from '@/core/ports/outbound/ComplianceRepository';
 
 describe('ComputeComplianceBalance', () => {
-  it('computes compliance balance for route', () => {
-    const useCase = new ComputeComplianceBalance(new GHGIntensity(89.3368));
+  let mockRepository: ComplianceRepository;
+
+  beforeEach(() => {
+    mockRepository = {
+      save: jest.fn().mockResolvedValue(undefined),
+      findByShipAndYear: jest.fn(),
+    };
+  });
+
+  it('computes compliance balance for route', async () => {
+    const useCase = new ComputeComplianceBalance(
+      new GHGIntensity(89.3368),
+      mockRepository,
+    );
 
     const route = new Route({
       routeId: 'R001',
@@ -18,8 +31,9 @@ describe('ComputeComplianceBalance', () => {
       totalEmissions: 4000,
     });
 
-    const cb = useCase.execute(route);
+    const cb = await useCase.execute(route);
 
     expect(cb.value).toBeLessThan(0);
+    expect(mockRepository.save).toHaveBeenCalledTimes(1);
   });
 });

@@ -6,6 +6,6 @@ export interface ComplianceRepository {
 
   findByShipAndYear(
     shipId: string,
-    year: Year
+    year: Year,
   ): Promise<ComplianceBalance | null>;
 }

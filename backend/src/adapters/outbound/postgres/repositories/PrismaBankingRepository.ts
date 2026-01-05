@@ -14,10 +14,7 @@ export class PrismaBankingRepository implements BankingRepository {
     });
   }
 
-  async findTotalBankedForShip(
-    shipId: string,
-    year: Year
-  ): Promise<number> {
+  async findTotalBankedForShip(shipId: string, year: Year): Promise<number> {
     const result = await prisma.bankEntry.aggregate({
       where: {
         shipId,
@@ -34,7 +31,7 @@ export class PrismaBankingRepository implements BankingRepository {
   async applyBankedAmount(
     shipId: string,
     year: Year,
-    amount: number
+    amount: number,
   ): Promise<void> {
     await prisma.bankEntry.create({
       data: {
@@ -45,4 +42,3 @@ export class PrismaBankingRepository implements BankingRepository {
     });
   }
 }
-

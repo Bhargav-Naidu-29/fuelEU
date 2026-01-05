@@ -3,9 +3,7 @@ import { BankedSurplus } from '../../domain/entities/BankedSurplus';
 import { BankingRepository } from '../../ports/outbound/BankingRepository';
 
 export class BankSurplus {
-  constructor(
-    private readonly repository: BankingRepository
-  ) {}
+  constructor(private readonly repository: BankingRepository) {}
 
   async execute(params: {
     balance: ComplianceBalance;
@@ -24,7 +22,7 @@ export class BankSurplus {
     const surplus = new BankedSurplus({
       shipId: balance.shipId,
       year: balance.year,
-      amount
+      amount,
     });
 
     await this.repository.save(surplus);

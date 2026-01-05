@@ -2,12 +2,26 @@ import { Request, Response } from 'express';
 import { ComputeComplianceBalance } from '@/core/application/use-cases/ComputeComplianceBalance';
 import { Year } from '@/core/domain/value-objects/Year';
 import { GHGIntensity } from '@/core/domain/value-objects/GHGIntensity';
-import { Route } from '@/core/domain/entities/Route';
+import { Route, VesselType, FuelType } from '@/core/domain/entities/Route';
+
+interface ComputeComplianceRequest {
+  routeId: string;
+  vesselType: VesselType;
+  fuelType: FuelType;
+  year: number;
+  ghgIntensity: number;
+  fuelConsumption: number;
+  distance: number;
+  totalEmissions: number;
+}
 
 export class ComplianceController {
   constructor(private readonly computeCB: ComputeComplianceBalance) {}
 
-  compute = (req: Request, res: Response) => {
+  compute = async (
+    req: Request<unknown, unknown, ComputeComplianceRequest>,
+    res: Response,
+  ) => {
     const route = new Route({
       routeId: req.body.routeId,
       vesselType: req.body.vesselType,
@@ -19,7 +33,7 @@ export class ComplianceController {
       totalEmissions: req.body.totalEmissions,
     });
 
-    const cb = this.computeCB.execute(route);
+    const cb = await this.computeCB.execute(route);
 
     res.json({
       shipId: cb.shipId,

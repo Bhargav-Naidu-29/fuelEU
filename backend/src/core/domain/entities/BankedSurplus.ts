@@ -5,11 +5,7 @@ export class BankedSurplus {
   private readonly _year: Year;
   private readonly _amount: number;
 
-  constructor(params: {
-    shipId: string;
-    year: Year;
-    amount: number;
-  }) {
+  constructor(params: { shipId: string; year: Year; amount: number }) {
     if (params.amount <= 0) {
       throw new Error('Only positive compliance balance can be banked');
     }

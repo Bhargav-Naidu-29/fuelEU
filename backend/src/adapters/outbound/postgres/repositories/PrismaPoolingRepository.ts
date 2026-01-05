@@ -6,7 +6,7 @@ import { prisma } from '@/infrastructure/db/prisma';
 
 export class PrismaPoolingRepository implements PoolingRepository {
   async save(pool: Pool): Promise<void> {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       const createdPool = await tx.pool.create({
         data: {
           year: pool.year,
@@ -14,7 +14,7 @@ export class PrismaPoolingRepository implements PoolingRepository {
       });
 
       await tx.poolMember.createMany({
-        data: pool.members.map((member) => ({
+        data: pool.members.map(member => ({
           poolId: createdPool.id,
           shipId: member.shipId,
           cbBefore: member.cbBefore,
@@ -37,14 +37,13 @@ export class PrismaPoolingRepository implements PoolingRepository {
       },
     });
 
-    return records.map((record) => {
+    return records.map(record => {
       const poolMembers = record.members.map(
-        (member) =>
-          new PoolMember(member.shipId, member.cbBefore, member.cbAfter)
+        member =>
+          new PoolMember(member.shipId, member.cbBefore, member.cbAfter),
       );
 
       return new Pool(record.year, poolMembers);
     });
   }
 }
-

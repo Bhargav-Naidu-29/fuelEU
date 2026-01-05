@@ -25,7 +25,7 @@ export class PrismaComplianceRepository implements ComplianceRepository {
 
   async findByShipAndYear(
     shipId: string,
-    year: Year
+    year: Year,
   ): Promise<ComplianceBalance | null> {
     const record = await prisma.shipCompliance.findUnique({
       where: {
@@ -35,14 +35,13 @@ export class PrismaComplianceRepository implements ComplianceRepository {
         },
       },
     });
-  
+
     if (!record) return null;
-  
+
     return new ComplianceBalance({
       shipId: record.shipId,
       year: new Year(record.year),
       value: record.cbGco2eq,
     });
   }
-  
 }

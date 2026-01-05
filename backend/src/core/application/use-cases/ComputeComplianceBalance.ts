@@ -28,7 +28,6 @@
 //   }
 // }
 
-
 import { Route } from '../../domain/entities/Route';
 import { EnergyUsed } from '../../domain/value-objects/EnergyUsed';
 import { ComplianceValue } from '../../domain/value-objects/ComplianceValue';
@@ -39,7 +38,7 @@ import { ComplianceRepository } from '../../ports/outbound/ComplianceRepository'
 export class ComputeComplianceBalance {
   constructor(
     private readonly targetIntensity: GHGIntensity,
-    private readonly repository: ComplianceRepository
+    private readonly repository: ComplianceRepository,
   ) {}
 
   async execute(route: Route): Promise<ComplianceBalance> {
@@ -62,4 +61,3 @@ export class ComputeComplianceBalance {
     return balance;
   }
 }
-

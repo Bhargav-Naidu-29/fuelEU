@@ -4,9 +4,7 @@ import { Year } from '../../domain/value-objects/Year';
 import { PoolingRepository } from '../../ports/outbound/PoolingRepository';
 
 export class CreatePool {
-  constructor(
-    private readonly repository: PoolingRepository
-  ) {}
+  constructor(private readonly repository: PoolingRepository) {}
 
   async execute(params: {
     year: Year;
@@ -54,12 +52,10 @@ export class CreatePool {
         throw new Error('Surplus ship cannot exit negative');
       }
 
-      poolMembers.push(
-        new PoolMember(member.shipId, member.cb, cbAfter)
-      );
+      poolMembers.push(new PoolMember(member.shipId, member.cb, cbAfter));
     }
 
-    const pool = new Pool(year, poolMembers);
+    const pool = new Pool(year.value, poolMembers);
 
     await this.repository.save(pool);
 

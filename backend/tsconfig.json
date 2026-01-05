@@ -5,10 +5,10 @@
     "lib": ["ES2022"],
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": ".",
+    "baseUrl": "src",
     "types": ["node"],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["*"]
     },
     "strict": true,
     "esModuleInterop": true,
