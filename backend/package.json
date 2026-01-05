@@ -5,6 +5,7 @@
   "main": "dist/infrastructure/server/index.js",
   "scripts": {
     "build": "tsc",
+    "typecheck": "tsc --noEmit",
     "dev": "ts-node-dev --respawn --transpile-only src/infrastructure/server/index.ts",
     "start": "node dist/infrastructure/server/index.js",
     "lint": "eslint src tests --ext .ts",
@@ -15,10 +16,13 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:integration": "jest --testPathPattern=integration",
+    "test:unit": "jest --testPathPattern='(domain|application)'",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset",
+    "prebuild": "npm run db:generate"
   },
   "keywords": [],
   "author": "",

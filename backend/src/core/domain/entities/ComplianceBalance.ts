@@ -1,11 +1,14 @@
+import { Year } from '../value-objects/Year';
+
+
 export class ComplianceBalance {
     private readonly _shipId: string;
-    private readonly _year: number;
+    private readonly _year: Year;
     private readonly _value: number; // gCO2eq
   
     constructor(params: {
       shipId: string;
-      year: number;
+      year: Year;
       value: number;
     }) {
       this._shipId = params.shipId;
