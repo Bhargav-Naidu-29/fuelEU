@@ -8,7 +8,7 @@ export const ApplyBankForm: React.FC = () => {
     const [year, setYear] = useState(currentYear);
     const years = Array.from({ length: 5 }, (_, i) => currentYear - 4 + i).reverse();
 
-    const [amount, setAmount] = useState(0);
+    const [amount, setAmount] = useState<string>('0');
     const { execute, loading, error } = useApplyBankedSurplus();
     const [msg, setMsg] = useState('');
 
@@ -16,9 +16,9 @@ export const ApplyBankForm: React.FC = () => {
         e.preventDefault();
         setMsg('');
         try {
-            await execute(shipId, year, amount);
+            await execute(shipId, year, Number(amount));
             setMsg('Banked surplus applied successfully!');
-            setAmount(0);
+            setAmount('0');
         } catch (err) {
             // Local error handling if needed, but hook handles state
         }
@@ -38,7 +38,7 @@ export const ApplyBankForm: React.FC = () => {
                         type="text"
                         value={shipId}
                         onChange={(e) => setShipId(e.target.value)}
-                        className="w-full bg-white/10 border-transparent rounded-lg focus:ring-indigo-500 text-sm placeholder:text-white/20"
+                        className="w-full bg-white/10 border-transparent rounded-lg focus:ring-indigo-500 text-sm placeholder:text-white/20 py-2.5 px-4"
                         placeholder="Target ship..."
                     />
                 </div>
@@ -51,7 +51,7 @@ export const ApplyBankForm: React.FC = () => {
                             name="applyYear"
                             value={year}
                             onChange={(e) => setYear(Number(e.target.value))}
-                            className="w-full bg-white/10 border-transparent rounded-lg focus:ring-indigo-500 text-sm"
+                            className="w-full bg-slate-800 border-transparent rounded-lg focus:ring-indigo-500 text-sm placeholder-slate-400 py-2.5 px-4"
                         >
                             {years.map(y => (
                                 <option key={y} value={y}>{y}</option>
@@ -66,8 +66,8 @@ export const ApplyBankForm: React.FC = () => {
                             required
                             type="number"
                             value={amount}
-                            onChange={(e) => setAmount(Number(e.target.value))}
-                            className="w-full bg-white/10 border-transparent rounded-lg focus:ring-indigo-500 text-sm font-mono"
+                            onChange={(e) => setAmount(e.target.value.replace(/^0+(?!$)/, ''))}
+                            className="w-full bg-white/10 border-transparent rounded-lg focus:ring-indigo-500 text-sm font-mono py-2.5 px-4"
                         />
                     </div>
                 </div>

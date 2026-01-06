@@ -8,7 +8,7 @@ export const BankForm: React.FC = () => {
     const [year, setYear] = useState(currentYear);
     const years = Array.from({ length: 5 }, (_, i) => currentYear - 4 + i).reverse();
 
-    const [amount, setAmount] = useState(0);
+    const [amount, setAmount] = useState<string>('0');
     const { execute, loading, error } = useBankSurplus();
     const [msg, setMsg] = useState('');
 
@@ -16,10 +16,10 @@ export const BankForm: React.FC = () => {
         e.preventDefault();
         setMsg('');
         try {
-            await execute(shipId, year, amount);
+            await execute(shipId, year, Number(amount));
             setMsg('Surplus successfully banked!');
             setShipId('');
-            setAmount(0);
+            setAmount('0');
         } catch (err) {
             // Error managed by hook
         }
@@ -38,7 +38,7 @@ export const BankForm: React.FC = () => {
                     type="text"
                     value={shipId}
                     onChange={(e) => setShipId(e.target.value)}
-                    className="w-full rounded-lg border-slate-200 focus:ring-indigo-500 text-sm"
+                    className="w-full rounded-lg border-slate-200 focus:ring-indigo-500 text-sm py-2.5 px-4"
                     placeholder="Identify ship..."
                 />
             </div>
@@ -51,7 +51,7 @@ export const BankForm: React.FC = () => {
                         name="bankYear"
                         value={year}
                         onChange={(e) => setYear(Number(e.target.value))}
-                        className="w-full rounded-lg border-slate-200 focus:ring-indigo-500 text-sm"
+                        className="w-full rounded-lg border-slate-200 focus:ring-indigo-500 text-sm py-2.5 px-4"
                     >
                         {years.map(y => (
                             <option key={y} value={y}>{y}</option>
@@ -64,11 +64,11 @@ export const BankForm: React.FC = () => {
                             required
                             type="number"
                             value={amount}
-                            onChange={(e) => setAmount(Number(e.target.value))}
-                            className="w-full rounded-lg border-slate-200 focus:ring-indigo-500 text-sm font-mono pr-8"
+                            onChange={(e) => setAmount(e.target.value.replace(/^0+(?!$)/, ''))}
+                            className="w-full rounded-lg border-slate-200 focus:ring-indigo-500 text-sm font-mono pr-12 py-2.5 px-4"
                             placeholder="Amt"
                         />
-                        <span className="absolute right-2 top-2 text-[10px] text-slate-400 font-bold">MJ</span>
+                        <span className="absolute right-3 top-3 text-[10px] text-slate-400 font-bold">MJ</span>
                     </div>
                 </div>
             </div>

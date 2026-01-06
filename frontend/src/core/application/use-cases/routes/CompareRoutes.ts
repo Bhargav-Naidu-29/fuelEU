@@ -4,12 +4,19 @@ import { Route } from '@/core/domain';
 export class CompareRoutes {
     constructor(private readonly routesPort: RoutesPort) { }
 
-    async execute(routeId: string, year: number): Promise<{
+    async execute(year: number, routeId?: string): Promise<{
         baseline: Route;
-        comparison: Route;
-        percentDiff: number;
-        compliant: boolean;
+        comparison: {
+            percentDiff: number;
+            compliant: boolean;
+        };
+        comparisonRoute?: Route;
+        results?: {
+            route: Route;
+            percentDiff: number;
+            compliant: boolean;
+        }[];
     }> {
-        return await this.routesPort.compareRoutes(routeId, year);
+        return await this.routesPort.compareRoutes(year, routeId);
     }
 }

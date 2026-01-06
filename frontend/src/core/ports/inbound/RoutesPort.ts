@@ -9,12 +9,19 @@ export interface RoutesPort {
     ): Promise<void>;
 
     compareRoutes(
-        routeId: string,
-        year: number
+        year: number,
+        routeId?: string
     ): Promise<{
         baseline: Route;
-        comparison: Route;
-        percentDiff: number;
-        compliant: boolean;
+        comparison: {
+            percentDiff: number;
+            compliant: boolean;
+        };
+        comparisonRoute?: Route;
+        results?: {
+            route: Route;
+            percentDiff: number;
+            compliant: boolean;
+        }[];
     }>;
 }

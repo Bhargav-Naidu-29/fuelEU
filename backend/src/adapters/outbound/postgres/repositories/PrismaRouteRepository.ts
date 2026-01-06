@@ -1,5 +1,5 @@
 import { RouteRepository } from '@/core/ports/outbound/RouteRepository';
-import { Route, VesselType, FuelType } from '@/core/domain/entities/Route';
+import { Route } from '@/core/domain/entities/Route';
 import { Year } from '@/core/domain/value-objects/Year';
 import { prisma } from '@/infrastructure/db/prisma';
 import { GHGIntensity } from '@/core/domain/value-objects/GHGIntensity';
@@ -78,18 +78,15 @@ export class PrismaRouteRepository implements RouteRepository {
             },
         });
 
-        return records.map(
-            (r) =>
-                new Route({
-                    routeId: r.routeId,
-                    vesselType: r.vesselType as VesselType,
-                    fuelType: r.fuelType as FuelType,
-                    year: new Year(r.year),
-                    ghgIntensity: new GHGIntensity(r.ghgIntensity),
-                    fuelConsumption: r.fuelConsumption,
-                    distance: r.distance,
-                    totalEmissions: r.totalEmissions,
-                }),
-        );
+        return records.map(this.toDomain);
+    }
+
+    async findByYear(year: Year): Promise<Route[]> {
+        const records = await prisma.route.findMany({
+            where: {
+                year: year.value,
+            },
+        });
+        return records.map(this.toDomain);
     }
 }

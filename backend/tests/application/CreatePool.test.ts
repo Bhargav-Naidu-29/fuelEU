@@ -71,5 +71,29 @@ describe('CreatePool', () => {
     const ship001 = pool.members.find(m => m.shipId === 'SHIP001');
     expect(ship001?.cbAfter).toBe(50);
   });
+
+  it('ensures deficit ship does not exit worse', async () => {
+    const year = new Year(2025);
+    const members = [
+      { shipId: 'SURPLUS', cb: 10 },
+      { shipId: 'DEFICIT', cb: -50 },
+    ];
+
+    const pool = await useCase.execute({ year, members });
+    const deficitShip = pool.members.find(m => m.shipId === 'DEFICIT');
+    expect(deficitShip!.cbAfter).toBeGreaterThanOrEqual(deficitShip!.cbBefore);
+  });
+
+  it('ensures surplus ship does not exit negative', async () => {
+    const year = new Year(2025);
+    const members = [
+      { shipId: 'SURPLUS', cb: 10 },
+      { shipId: 'DEFICIT', cb: -5 },
+    ];
+
+    const pool = await useCase.execute({ year, members });
+    const surplusShip = pool.members.find(m => m.shipId === 'SURPLUS');
+    expect(surplusShip!.cbAfter).toBeGreaterThanOrEqual(0);
+  });
 });
 

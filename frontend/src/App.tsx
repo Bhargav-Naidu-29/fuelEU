@@ -7,7 +7,7 @@ import { CreatePoolForm } from './adapters/ui/components/pooling';
 
 export default function App() {
     const [activeTab, setActiveTab] = useState('routes');
-    const [filters, setFilters] = useState({ vesselType: '', shipId: '', year: new Date().getFullYear() });
+    const [filters, setFilters] = useState({ vesselType: '', shipId: '', year: 0 });
 
     const tabs = [
         { id: 'routes', label: 'Monitor Routes' },
@@ -29,11 +29,9 @@ export default function App() {
                 return <CompareTable />;
             case 'banking':
                 return (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2">
-                            <BankingSummary />
-                        </div>
-                        <div className="space-y-8">
+                    <div className="space-y-8 max-w-5xl mx-auto">
+                        <BankingSummary />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                             <BankForm />
                             <ApplyBankForm />
                         </div>

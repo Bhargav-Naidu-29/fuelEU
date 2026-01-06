@@ -8,6 +8,7 @@ export interface AdjustedComplianceBalance {
     shipId: string;
     year: number;
     originalValue: number;
+    applied: number;
     adjustedValue: number;
 }
 
@@ -27,6 +28,7 @@ export const AdjustedComplianceBalance = {
             shipId: data.shipId,
             year: data.year,
             originalValue: data.originalValue,
+            applied: data.adjustedValue - data.originalValue,
             adjustedValue: data.adjustedValue,
         };
     },

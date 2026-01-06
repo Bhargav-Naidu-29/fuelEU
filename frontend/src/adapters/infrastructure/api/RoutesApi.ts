@@ -21,24 +21,35 @@ export class RoutesApi implements RoutesPort {
     }
 
     async compareRoutes(
-        routeId: string,
-        year: number
+        year: number,
+        routeId?: string
     ): Promise<{
         baseline: Route;
-        comparison: Route;
-        percentDiff: number;
-        compliant: boolean;
+        comparison: {
+            percentDiff: number;
+            compliant: boolean;
+        };
+        comparisonRoute?: Route;
+        results?: {
+            route: Route;
+            percentDiff: number;
+            compliant: boolean;
+        }[];
     }> {
         const data = await this.http.get<any>('/routes/comparison', {
-            routeId,
             year,
+            ...(routeId && { routeId }),
         });
 
         return {
             baseline: Route.fromApi(data.baseline),
-            comparison: Route.fromApi(data.comparison),
-            percentDiff: data.percentDiff,
-            compliant: data.compliant,
+            comparison: data.comparison,
+            comparisonRoute: data.comparisonRoute ? Route.fromApi(data.comparisonRoute) : undefined,
+            results: data.results?.map((r: any) => ({
+                route: Route.fromApi(r.route),
+                percentDiff: r.percentDiff,
+                compliant: r.compliant,
+            })),
         };
     }
 }

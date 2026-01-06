@@ -48,43 +48,47 @@ export class RoutesController {
     async compare(req: Request, res: Response) {
         const { routeId, year } = req.query;
 
-        if (!routeId || !year) {
-            res.status(400).json({ error: 'routeId and year are required' });
+        if (!year) {
+            res.status(400).json({ error: 'Year is required' });
             return;
         }
 
         try {
             const result = await this.compareRoutes.execute(
-                String(routeId),
                 new Year(Number(year)),
+                routeId ? String(routeId) : undefined,
             );
 
-            res.json({
-                baseline: {
-                    routeId: result.baseline.routeId,
-                    vesselType: result.baseline.vesselType,
-                    fuelType: result.baseline.fuelType,
-                    year: result.baseline.year.value,
-                    ghgIntensity: result.baseline.ghgIntensity.value,
-                    fuelConsumption: result.baseline.fuelConsumption,
-                    distance: result.baseline.distance,
-                    totalEmissions: result.baseline.totalEmissions,
-                    isBaseline: result.baseline.isBaseline,
-                },
-                comparison: {
-                    routeId: result.route.routeId,
-                    vesselType: result.route.vesselType,
-                    fuelType: result.route.fuelType,
-                    year: result.route.year.value,
-                    ghgIntensity: result.route.ghgIntensity.value,
-                    fuelConsumption: result.route.fuelConsumption,
-                    distance: result.route.distance,
-                    totalEmissions: result.route.totalEmissions,
-                    isBaseline: result.route.isBaseline,
-                },
-                percentDiff: result.comparison.percentDiff,
-                compliant: result.comparison.compliant,
+            const formatRoute = (r: any) => ({
+                routeId: r.routeId,
+                vesselType: r.vesselType,
+                fuelType: r.fuelType,
+                year: r.year.value,
+                ghgIntensity: r.ghgIntensity.value,
+                fuelConsumption: r.fuelConsumption,
+                distance: r.distance,
+                totalEmissions: r.totalEmissions,
+                isBaseline: r.isBaseline,
             });
+
+            const response: any = {
+                baseline: formatRoute(result.baseline),
+                comparison: result.comparison,
+            };
+
+            if (result.route) {
+                response.comparisonRoute = formatRoute(result.route);
+            }
+
+            if (result.results) {
+                response.results = result.results.map(r => ({
+                    route: formatRoute(r.route),
+                    percentDiff: r.percentDiff,
+                    compliant: r.compliant
+                }));
+            }
+
+            res.json(response);
         } catch (e: any) {
             console.error('[RoutesController.compare]', e.message);
             if (e.message === 'Route not found' || e.message === 'No baseline set for this year') {

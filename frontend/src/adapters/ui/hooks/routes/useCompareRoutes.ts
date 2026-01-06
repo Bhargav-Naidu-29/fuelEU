@@ -6,19 +6,26 @@ import { routesApi } from '../dependencies';
 export function useCompareRoutes() {
     const [data, setData] = useState<{
         baseline: Route;
-        comparison: Route;
-        percentDiff: number;
-        compliant: boolean;
+        comparison: {
+            percentDiff: number;
+            compliant: boolean;
+        };
+        comparisonRoute?: Route;
+        results?: {
+            route: Route;
+            percentDiff: number;
+            compliant: boolean;
+        }[];
     } | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const execute = useCallback(async (id: string, y: number) => {
+    const execute = useCallback(async (y: number, id?: string) => {
         setLoading(true);
         setError(null);
         try {
             const useCase = new CompareRoutes(routesApi);
-            const result = await useCase.execute(id, y);
+            const result = await useCase.execute(y, id);
             setData(result);
             return result;
         } catch (err) {

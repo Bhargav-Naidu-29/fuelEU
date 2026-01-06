@@ -28,11 +28,11 @@ export const RoutesTable: React.FC<RoutesTableProps> = ({ filters }) => {
         return matchesType && matchesShip && matchesYear;
     });
 
-    const totalPages = Math.ceil(filteredRoutes.length / pageSize);
-    const paginatedRoutes = filteredRoutes.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const sortedRoutes = [...filteredRoutes].sort((a, b) => a.routeId.localeCompare(b.routeId));
+    const totalPages = Math.ceil(sortedRoutes.length / pageSize);
+    const paginatedRoutes = sortedRoutes.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     const headers = [
-        'Status',
         'Route ID',
         'Vessel Type',
         'Fuel',
@@ -40,7 +40,8 @@ export const RoutesTable: React.FC<RoutesTableProps> = ({ filters }) => {
         'Distance (km)',
         'Emissions (t)',
         'GHG Intensity',
-        'Actions'
+        'Actions',
+        'Status'
     ];
 
     return (
@@ -48,13 +49,6 @@ export const RoutesTable: React.FC<RoutesTableProps> = ({ filters }) => {
             <Table headers={headers}>
                 {paginatedRoutes.map((route) => (
                     <tr key={`${route.routeId}-${route.year}`} className={`transition-colors ${route.isBaseline ? 'bg-indigo-50/50' : 'hover:bg-slate-50'}`}>
-                        <td className="px-6 py-4">
-                            {route.isBaseline ? (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white uppercase tracking-wider">Baseline</span>
-                            ) : (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-400 uppercase tracking-wider">Draft</span>
-                            )}
-                        </td>
                         <td className="px-6 py-4 text-sm font-medium text-slate-900">{route.routeId}</td>
                         <td className="px-6 py-4 text-sm text-slate-600">{route.vesselType}</td>
                         <td className="px-6 py-4 text-sm text-slate-600">{route.fuelType}</td>
@@ -71,6 +65,13 @@ export const RoutesTable: React.FC<RoutesTableProps> = ({ filters }) => {
                                     year={route.year}
                                     onSuccess={refresh}
                                 />
+                            )}
+                        </td>
+                        <td className="px-6 py-4">
+                            {route.isBaseline ? (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white uppercase tracking-wider">Baseline</span>
+                            ) : (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-400 uppercase tracking-wider">Draft</span>
                             )}
                         </td>
                     </tr>

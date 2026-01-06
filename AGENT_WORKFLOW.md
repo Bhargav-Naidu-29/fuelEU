@@ -1,126 +1,91 @@
-# AI Agent Workflow Log: FuelEU Maritime Backend
+# Agent Workflow Documentation
 
-This document records the intentional and auditable use of AI agents during the development of the **FuelEU Maritime Backend**. All domain logic, regulatory compliance formulas, and architectural decisions were implemented or verified manually to ensure engineering integrity.
+This document records the workflows, prompts, and agentic interactions used to build the FuelEU Maritime Dashboard.
 
----
+## Phase 1: Backend Development (Hexagonal Architecture)
 
-## 1. AI Agent Overview
+*Note: These prompts were executed by a foundational agentic AI to establish the core domain logic and API structure.*
 
-The following tools were used under a "Human-in-the-loop" model, where AI handled boilerplate while developers handled core logic.
+### Prompt 1: Project Scaffolding & Hexagonal Architecture
+> "Create a new Node.js TypeScript project for FuelEU Maritime compliance. Implement a strict Hexagonal Architecture with the following folder structure: `src/core/domain`, `src/core/ports`, `src/core/application`, `src/adapters/inbound`, `src/adapters/outbound`. Initialize a basic Express server in `src/adapters/inbound/http/server.ts`."
 
-| Agent | Primary Purpose | Scope of Usage |
-| :--- | :--- | :--- |
-| **Cursor Agent** | Structural & Boilerplate | Scaffolding, repository adapters, controller wiring, and test generation. |
-| **GitHub Copilot** | Inline Assistance | Repetitive mappings, imports, constructors, and syntax completion. |
-| **Anti-Gravity AI** | Validation | Strict black-box API testing and endpoint verification (no code changes). |
+**Outcome**: Established the clean architecture separation.
 
-> [!IMPORTANT]
-> **No AI agent was used to generate or decide FuelEU compliance formulas, banking rules, or pooling logic.** All regulatory math was implemented manually.
+### Prompt 2: Domain Modeling (Routes & Compliance)
+> "Define the domain entities for `Route` and `ComplianceBalance` in `src/core/domain/entities`. A Route should have `id`, `startPort`, `endPort`, `realCb`, and `baselineCb`. A ComplianceBalance should track the surplus/deficit. Ensure these are pure TypeScript classes/interfaces with no external dependencies."
 
----
+**Outcome**: Core business entities created.
 
-## 2. Documented Prompts & Outputs
+### Prompt 3: Compliance Logic Implementation
+> "Implement a Use Case `ComputeComplianceBalance` in `src/core/application/use-cases`. It should accept a `shipId` and `year`, fetch routes via a `RoutesPort`, and calculate the total compliance balance based on the difference between `baselineCb` and `realCb`. Write unit tests for this logic using Jest."
 
-### 2.1 Backend Scaffolding (Architectural Setup)
-**Prompt:**
-> Generate a backend project skeleton using Node.js + TypeScript following Hexagonal Architecture. 
-> **Constraints:** > - core → ports → adapters → infrastructure 
-> - No frameworks in core 
-> - Express and Prisma only in adapters/infrastructure 
-> - Do NOT implement business logic. Backend only.
+**Outcome**: Business logic for penalty/surplus calculation verified.
 
-**Output & Action:**
-* **Result:** Created a clean hexagonal folder structure (`core/domain`, `core/application`, `core/ports`, etc.) with empty placeholders.
-* **Action Taken:** Structure accepted. All domain entities and use cases were implemented manually afterward.
+### Prompt 4: Banking System Logic
+> "Implement the Banking Mechanism. Create a `BankSurplus` use case that allows a ship to bank its positive compliance balance for future years. Add validation to ensure only positive balances can be banked. Store these records via a `BankingPort`. Handle domain errors like `InsufficientSurplus`."
 
-### 2.2 Repository Adapter Generation (Data Persistence)
-**Prompt:**
-> Create a Prisma repository adapter implementing `BankingRepository`. 
-> **Constraints:** > - Only persistence logic; no business logic.
-> - Follow existing interface. 
-> - File path: `src/adapters/outbound/postgres/repositories/PrismaBankingRepository.ts`
+**Outcome**: Future-proofing compliance logic added.
 
-**Output & Corrections:**
-* **Result:** Generated a Prisma adapter with `save`, `findTotalBankedForShip`, and `applyBankedAmount`.
-* **Corrections Applied:** Fixed type mismatches (specifically `Year` vs `number`), ensured `camelCase` consistency, and verified that no domain rules leaked into the persistence layer.
+### Prompt 5: Compliance Pooling Logic
+> "Create a `CreatePool` use case. It should accept a list of ships and a year. It must verify that the sum of their compliance balances is non-negative. If valid, return a success result; otherwise, throw a `PoolComplianceError`. Implement the necessary `PoolingPort` interface."
 
-> This workflow ensures transparency, correctness, and professional engineering judgment aligned with real-world production standards.
+**Outcome**: Fleet-wide compliance pooling logic implemented.
+
+### Prompt 6: API Layer & Error Mapping
+> "Map the domain errors to HTTP status codes. `InvalidComplianceValueError` should return 400, and `InsufficientSurplus` should return 409. create `RoutesController`, `ComplianceController`, and `BankingController` to expose the use cases via REST endpoints."
+
+**Outcome**: HTTP adapters wired to domain logic.
 
 ---
 
-## Frontend — AI Agent Usage
+## Phase 2: Frontend Development (Modern React + Hexagonal)
 
-### Agents Used
+*Prompts executed by Antigravity Agent to build the UI and integrate with the Backend.*
 
-- **Anti-Gravity AI**
-  - Used for scaffolding the directory structure and implementing shared UI primitives (`Button`, `Table`, `Loader`) and pure utility functions (`formatNumber`, `formatPercentage`).
-  - Used to scaffold the application use-cases layer (Routes, Compliance, Banking, Pooling), ensuring strict hexagonal orchestration.
-  - Used to scaffold the UI adapter hooks layer, providing React components with a standardized interface to the use-cases.
-  - **No business or regulatory logic** was delegated to AI; hooks only manage async state and orchestrate use-case execution.
-  - All generated code was manually reviewed for architectural integrity and strict dependency control.
-  - **Finalization & Data Visualization**:
-    - Used to implement professional data visualizations using `recharts` for the Compare, Banking, and Pooling tabs.
-    - Used to implement robust error handling in the `HttpClient` to manage non-JSON and 204 responses.
-    - Used to refine the Banking API to require explicit `amount` inputs, ensuring the system remains spec-pure and avoids undocumented auto-banking behavior.
+### Prompt 7: Frontend Scaffolding & Layout
+> "Initialize a Vite + React + TypeScript frontend. Setup TailwindCSS for styling. Create a main layout with a sidebar navigation for 'Monitor Routes', 'Compare', 'Banking', and 'Pooling'. Use a Hexagonal Architecture folder structure: `adapters/ui`, `adapters/infrastructure`, `core/application`."
 
----
+**Outcome**: Frontend base created with matching architecture.
 
-## 3. Validation, Corrections & Logic Control
+### Prompt 8: Routes & Baseline Management
+> "Implement the 'Monitor Routes' tab. Create a `RoutesTable` component to display fetched routes. Add a filter bar for Year and Vessel Type. Implement the `GetRoutes` use case and `RoutesApi` adapter to fetch data from `GET /routes`."
 
-To maintain "Intellectual Honesty" and project accuracy, all AI-generated outputs underwent rigorous manual review:
+**Outcome**: Data visualization for voyage routes.
 
-* **Architecture Guardrails:** Verified that no framework-specific imports (Express/Prisma) leaked into the `core` layer.
-* **Formula Verification:** All Compliance Balance (CB) calculations were cross-checked manually against official FuelEU Maritime formulas.
-* **Manual Refactoring:** * Corrected AI-suggested HTTP status codes (changing generic `500` errors to specific `400` or `409` conflicts).
-    * Rejected AI suggestions to pass compliance inputs via `GET` query strings.
-    * Reworked `GET /compliance/cb` to ensure it computes data strictly from persisted route records.
+### Prompt 9: Comparison Tool
+> "Build a Comparison Tool in the 'Compare' tab. Allow users to select a Ship ID and Year to compare their performance against the baseline. Display the result in a `CompareTable` with columns for Real CB vs. Baseline CB and a Status badge (Compliant/Non-Compliant)."
 
----
+**Outcome**: Decision support tool for compliance.
 
-## 4. Engineering Observations
+### Prompt 10: Banking UI & Integration
+> "Develop the Banking tab. Create two forms: `BankForm` to bank surplus and `ApplyBankForm` to apply it. Display a `BankingSummary` card showing the current balance. Wire these forms to `POST /compliance/bank` and `POST /compliance/apply` endpoints."
 
-### Where AI Enhanced Productivity
-* Rapid generation of Hexagonal boilerplate.
-* Automated creation of Unit Test shells for Value Objects.
-* Reducing friction in Prisma schema-to-repository mapping.
+**Outcome**: Full banking lifecycle management UI.
 
-### Where AI Failed (Human Intervention Required)
-* **Regulatory Context:** AI failed to realize that CB must be derived from stored route data rather than user-provided inputs in a `GET` request.
-* **Logic Leakage:** AI occasionally attempted to place business rules inside Controller layers.
-* **Type Safety:** Occasional hallucinations regarding custom Domain Types vs. TypeScript primitive types.
+### Prompt 11: Pooling UI & Visualization
+> "Implement the Pooling tab. Create a `CreatePoolForm` that allows adding multiple ships to a pool. Display a generic success message. Use Recharts to show a Pie Chart of the pool's composition (Contribution vs. Deficit)."
+
+**Outcome**: Complex fleet management interface.
 
 ---
 
-## 5. Best Practices & Compliance
+## Phase 3: Refinement & Polish
 
-* **Auditability:** AI was treated as an assistant, not an authority. Every line of code is justifiable to a human reviewer.
-* **Domain Integrity:** All FuelEU math, banking invariants, and pooling logic remain 100% human-written.
-* **Process:** Incremental Git commits were maintained to track the evolution of the codebase from AI-scaffolded structures to logic-complete features.
+### Prompt 12: UI Refinements (Banking & Routes)
+> "Refine the UI:
+> 1. Center the Banking forms and darken the dropdown background in `ApplyBankForm`.
+> 2. Remove 'All Years' option in Banking Summary.
+> 3. Set 'Monitor Routes' default filter to 'Combined' (0).
+> 4. Fix input padding in all forms to be less clumsy (`py-2.5 px-4`)."
 
----
+**Outcome**: polished, professional UI.
 
-## 6. End-to-End Finalization & Bug Fixes
+### Prompt 13: Pooling Enhancements
+> "Improve `CreatePoolForm`: Instead of a simple success message, show a detailed result card with the total pool balance and individual member contributions after creation. Fix the Pie Chart spacing."
 
-In the final phase of development, Anti-Gravity AI was used to resolve all remaining frontend and backend issues, ensuring the platform runs end-to-end without errors.
+**Outcome**: Enhanced user feedback loop.
 
-### Backend Fixes
-- **CORS Configuration**: Updated `app.ts` to explicitly allow `http://localhost:5173` and common HTTP methods/headers.
-- **Robust Error Handling**:
-    - Implemented a generic error handler in `app.ts` to ensure all errors return JSON instead of HTML stack traces.
-    - Added a 404 handler for unregistered routes.
-    - Improved `ComplianceController`, `BankingController`, and `PoolingController` to map domain errors (e.g., "No routes found", "Insufficient surplus") to appropriate HTTP 400/409/404 statuses.
-- **API Contract Alignment**:
-    - Refactored `RoutesController.compare` to return a flat JSON structure matching the frontend `RoutesApi` expectation, including full route data to prevent blank screen crashes.
-    - Standardized all controller methods to use standard class methods instead of arrow functions to improve linting and return-path safety.
-- **Business Logic Repair**: Refactored `CreatePool` use case to correctly track `cbAfter` for all members, ensuring that donors' final balances reflect the transfers made.
+### Prompt 14: Documentation & Finalization
+> "Write comprehensive documentation. Create `frontend/README.md` explaining the architecture. Update `REFLECTION.md` with lessons learned. Run the app and capture screenshots for the main README."
 
-### Frontend Fixes
-- **API Resilience**: Enhanced `ApiClient` to safely handle non-JSON responses and distinguish between empty (204) and faulty responses.
-- **UI Guards & States**:
-    - Added comprehensive guards and optional chaining in `CompareTable` to prevent crashes when data is missing.
-    - Implemented loading, empty, and error states across `BankingSummary`, `CompareTable`, and `RoutesTable`.
-    - Fixed Recharts rendering by ensuring all containers use `ResponsiveContainer` and have valid dimensions.
-- **Interaction Wiring**: Verified that all "Compare", "Set Baseline", "Bank", and "Apply" buttons are correctly wired to their respective hooks and provide success/error feedback.
-
----
-**Document Status:** Final | **Project:** FuelEU Maritime Platform
+**Outcome**: Full project documentation delivery.
