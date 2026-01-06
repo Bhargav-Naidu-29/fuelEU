@@ -3,8 +3,12 @@ import { Button } from '@/shared/ui/Button';
 import { useBankSurplus } from '../../hooks/banking/useBankSurplus';
 
 export const BankForm: React.FC = () => {
+    const currentYear = new Date().getFullYear();
     const [shipId, setShipId] = useState('');
-    const [year, setYear] = useState(2025);
+    const [year, setYear] = useState(currentYear);
+    const years = Array.from({ length: 5 }, (_, i) => currentYear - 4 + i).reverse();
+
+    const [amount, setAmount] = useState(0);
     const { execute, loading, error } = useBankSurplus();
     const [msg, setMsg] = useState('');
 
@@ -12,9 +16,10 @@ export const BankForm: React.FC = () => {
         e.preventDefault();
         setMsg('');
         try {
-            await execute(shipId, year);
+            await execute(shipId, year, amount);
             setMsg('Surplus successfully banked!');
             setShipId('');
+            setAmount(0);
         } catch (err) {
             // Error managed by hook
         }
@@ -25,8 +30,10 @@ export const BankForm: React.FC = () => {
             <h3 className="text-sm font-semibold text-slate-700 uppercase mb-4 text-center">Bank Compliance Surplus</h3>
 
             <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Ship ID</label>
+                <label htmlFor="bankShipId" className="block text-xs font-bold text-slate-500 uppercase mb-1">Ship ID</label>
                 <input
+                    id="bankShipId"
+                    name="bankShipId"
                     required
                     type="text"
                     value={shipId}
@@ -37,15 +44,33 @@ export const BankForm: React.FC = () => {
             </div>
 
             <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Target Year</label>
-                <select
-                    value={year}
-                    onChange={(e) => setYear(Number(e.target.value))}
-                    className="w-full rounded-lg border-slate-200 focus:ring-indigo-500 text-sm"
-                >
-                    <option value={2025}>2025</option>
-                    <option value={2026}>2026</option>
-                </select>
+                <label htmlFor="bankYear" className="block text-xs font-bold text-slate-500 uppercase mb-1">Target Year</label>
+                <div className="grid grid-cols-2 gap-4">
+                    <select
+                        id="bankYear"
+                        name="bankYear"
+                        value={year}
+                        onChange={(e) => setYear(Number(e.target.value))}
+                        className="w-full rounded-lg border-slate-200 focus:ring-indigo-500 text-sm"
+                    >
+                        {years.map(y => (
+                            <option key={y} value={y}>{y}</option>
+                        ))}
+                    </select>
+                    <div className="relative">
+                        <input
+                            id="bankAmount"
+                            name="bankAmount"
+                            required
+                            type="number"
+                            value={amount}
+                            onChange={(e) => setAmount(Number(e.target.value))}
+                            className="w-full rounded-lg border-slate-200 focus:ring-indigo-500 text-sm font-mono pr-8"
+                            placeholder="Amt"
+                        />
+                        <span className="absolute right-2 top-2 text-[10px] text-slate-400 font-bold">MJ</span>
+                    </div>
+                </div>
             </div>
 
             <Button type="submit" isLoading={loading} className="w-full">Initiate Banking</Button>

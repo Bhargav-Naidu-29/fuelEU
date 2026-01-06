@@ -56,7 +56,7 @@ export class PrismaBankingRepository implements BankingRepository {
     const records = await prisma.bankEntry.findMany({
       where: {
         shipId,
-        year: year.value,
+        ...(year.value > 0 ? { year: year.value } : {}),
       },
     });
     return records;

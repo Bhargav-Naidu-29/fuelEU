@@ -23,7 +23,7 @@ describe('CreatePool', () => {
 
     const pool = await useCase.execute({ year, members });
 
-    expect(pool.year).toBe(year);
+    expect(pool.year).toBe(year.value);
     expect(pool.members).toHaveLength(2);
     expect(mockRepository.save).toHaveBeenCalledTimes(1);
   });

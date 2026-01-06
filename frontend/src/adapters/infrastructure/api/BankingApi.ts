@@ -3,7 +3,7 @@ import { BankRecord } from '@/core/domain';
 import { HttpClientPort } from '@/core/ports';
 
 export class BankingApi implements BankingPort {
-  constructor(private readonly http: HttpClientPort) {}
+  constructor(private readonly http: HttpClientPort) { }
 
   async getBankingRecords(
     shipId: string,
@@ -19,11 +19,13 @@ export class BankingApi implements BankingPort {
 
   async bankSurplus(
     shipId: string,
-    year: number
+    year: number,
+    amount: number
   ): Promise<void> {
     await this.http.post('/banking/bank', {
       shipId,
       year,
+      amount,
     });
   }
 

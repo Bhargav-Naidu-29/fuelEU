@@ -29,10 +29,10 @@ export class ComplianceController {
     private readonly bankingRepo: BankingRepository,
   ) { }
 
-  compute = async (
+  async compute(
     req: Request<unknown, unknown, ComputeComplianceRequest>,
     res: Response,
-  ) => {
+  ) {
     try {
       const route = new Route({
         routeId: req.body.routeId,
@@ -52,14 +52,14 @@ export class ComplianceController {
         year: cb.year.value,
         value: cb.value,
       });
-    } catch (error) {
-      if (error instanceof InvalidComplianceValueError) {
+    } catch (error: any) {
+      if (error instanceof InvalidComplianceValueError || error.message?.includes('No routes found')) {
         res.status(400).json({ error: error.message });
       } else {
         throw error;
       }
     }
-  };
+  }
 
   // getCompute = async (
   //   req: Request<
@@ -97,10 +97,10 @@ export class ComplianceController {
   // };
 
 
-  getCompute = async (
+  async getCompute(
     req: Request<unknown, unknown, unknown, { shipId: string; year: string }>,
     res: Response,
-  ) => {
+  ) {
     try {
       const shipId = req.query.shipId;
       const year = new Year(Number(req.query.year));
@@ -112,20 +112,20 @@ export class ComplianceController {
         year: cb.year.value,
         value: cb.value,
       });
-    } catch (error) {
-      if (error instanceof InvalidComplianceValueError) {
+    } catch (error: any) {
+      if (error instanceof InvalidComplianceValueError || error.message?.includes('No routes found')) {
         res.status(400).json({ error: error.message });
       } else {
         throw error;
       }
     }
-  };
+  }
 
 
-  getAdjusted = async (
+  async getAdjusted(
     req: Request<unknown, unknown, unknown, { shipId: string; year: string }>,
     res: Response,
-  ) => {
+  ) {
     const year = new Year(Number(req.query.year));
     const shipId = req.query.shipId;
 
@@ -156,5 +156,5 @@ export class ComplianceController {
       originalValue: cb.value,
       adjustedValue,
     });
-  };
+  }
 }

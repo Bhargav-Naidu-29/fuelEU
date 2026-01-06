@@ -8,25 +8,36 @@ interface CreatePoolRequest {
 }
 
 export class PoolingController {
-  constructor(private readonly createPool: CreatePool) {}
+  constructor(private readonly createPool: CreatePool) { }
 
   create = async (
     req: Request<unknown, unknown, CreatePoolRequest>,
     res: Response,
   ) => {
-    const { year, members } = req.body;
+    try {
+      const { year, members } = req.body;
 
-    const pool = await this.createPool.execute({
-      year: new Year(year),
-      members,
-    });
+      // Handle both formats if necessary, but frontend uses cbBefore
+      const mappedMembers = members.map(m => ({
+        shipId: m.shipId,
+        cb: (m as any).cbBefore !== undefined ? (m as any).cbBefore : m.cb
+      }));
 
-    res.json({
-      members: pool.members.map(member => ({
-        shipId: member.shipId,
-        cbBefore: member.cbBefore,
-        cbAfter: member.cbAfter,
-      })),
-    });
+      const pool = await this.createPool.execute({
+        year: new Year(Number(year)),
+        members: mappedMembers,
+      });
+
+      res.json({
+        members: pool.members.map(member => ({
+          shipId: member.shipId,
+          cbBefore: member.cbBefore,
+          cbAfter: member.cbAfter,
+        })),
+      });
+    } catch (error: any) {
+      const status = error.message.includes('Pool sum') ? 400 : 500;
+      res.status(status).json({ error: error.message });
+    }
   };
 }

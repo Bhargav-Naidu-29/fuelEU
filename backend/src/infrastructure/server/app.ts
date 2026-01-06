@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { ComplianceController } from '@/adapters/inbound/http/controllers/ComplianceController';
 import { ComputeComplianceBalance } from '@/core/application/use-cases/ComputeComplianceBalance';
@@ -21,7 +21,11 @@ import { ComputeComplianceFromRoutes } from '@/core/application/use-cases/Comput
 
 export function createApp() {
   const app = express();
-  app.use(cors());
+  app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
   app.use(express.json());
 
   const repository = new PrismaComplianceRepository();
@@ -97,6 +101,20 @@ export function createApp() {
   });
   app.get('/routes/comparison', (req, res, next) => {
     void routesController.compare(req, res).catch(next);
+  });
+
+  // Catch 404 and return JSON
+  app.use((req, res) => {
+    res.status(404).json({ error: `Route not found: ${req.method} ${req.path}` });
+  });
+
+  // Generic error handler to ensure JSON responses and prevent HTML error pages
+  app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+    console.error(`[Error] ${req.method} ${req.path}:`, err.message);
+    const status = err.status || 500;
+    res.status(status).json({
+      error: status === 500 ? 'Internal Server Error' : err.message
+    });
   });
 
   return app;

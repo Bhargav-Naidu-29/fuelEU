@@ -28,42 +28,58 @@ export class BankingController {
   ) { }
 
 
-  bank = async (req: Request<unknown, unknown, BankRequest>, res: Response) => {
-    const { shipId, year, amount } = req.body;
-
-    const cb = await this.complianceRepo.findByShipAndYear(
-      shipId,
-      new Year(year),
-    );
-
-    if (!cb) {
-      return res.status(404).json({ message: 'Compliance balance not found' });
-    }
-
-    await this.bankSurplus.execute({ balance: cb, amount });
-
-    res.json({
-      cb_before: cb.value,
-      banked: amount,
-      cb_after: cb.value,
-    });
-    return;
-  };
-
-  apply = async (
-    req: Request<unknown, unknown, ApplyRequest>,
-    res: Response,
-  ) => {
+  async bank(req: Request<unknown, unknown, BankRequest>, res: Response) {
     try {
       const { shipId, year, amount } = req.body;
 
+      if (amount === undefined || amount === null) {
+        res.status(400).json({ error: 'amount is required' });
+        return;
+      }
+
       const cb = await this.complianceRepo.findByShipAndYear(
         shipId,
-        new Year(year),
+        new Year(Number(year)),
       );
 
       if (!cb) {
-        return res.status(404).json({ message: 'Compliance balance not found' });
+        res.status(404).json({ message: 'Compliance balance not found' });
+        return;
+      }
+
+      await this.bankSurplus.execute({ balance: cb, amount });
+
+      res.json({
+        cb_before: cb.value,
+        banked: amount,
+        cb_after: cb.value - amount,
+      });
+    } catch (error: any) {
+      console.error('[BankingController.bank]', error.message);
+      res.status(400).json({ error: error.message || 'Failed to bank surplus' });
+    }
+  }
+
+  async apply(
+    req: Request<unknown, unknown, ApplyRequest>,
+    res: Response,
+  ) {
+    try {
+      const { shipId, year, amount } = req.body;
+
+      if (amount === undefined || amount === null) {
+        res.status(400).json({ error: 'amount is required' });
+        return;
+      }
+
+      const cb = await this.complianceRepo.findByShipAndYear(
+        shipId,
+        new Year(Number(year)),
+      );
+
+      if (!cb) {
+        res.status(404).json({ message: 'Compliance balance not found' });
+        return;
       }
 
       await this.applyBanked.execute({ balance: cb, amount });
@@ -73,22 +89,21 @@ export class BankingController {
         applied: amount,
         cb_after: cb.value + amount,
       });
-      return;
     } catch (error: any) {
       if (error.message === 'Insufficient banked surplus available') {
         res.status(409).json({ error: error.message });
       } else {
-        throw error;
+        res.status(400).json({ error: error.message });
       }
     }
-  };
+  }
 
 
 
-  getRecords = async (
+  async getRecords(
     req: Request<unknown, unknown, unknown, { shipId: string; year: string }>,
     res: Response,
-  ) => {
+  ) {
     const { shipId, year } = req.query;
 
     const records = await this.getBankingRecords.execute(
@@ -97,7 +112,6 @@ export class BankingController {
     );
 
     res.json(records);
-    return;
-  };
+  }
 }
 

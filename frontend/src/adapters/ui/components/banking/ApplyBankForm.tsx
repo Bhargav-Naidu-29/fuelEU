@@ -3,8 +3,11 @@ import { Button } from '@/shared/ui/Button';
 import { useApplyBankedSurplus } from '../../hooks/banking/useApplyBankedSurplus';
 
 export const ApplyBankForm: React.FC = () => {
+    const currentYear = new Date().getFullYear();
     const [shipId, setShipId] = useState('');
-    const [year, setYear] = useState(2025);
+    const [year, setYear] = useState(currentYear);
+    const years = Array.from({ length: 5 }, (_, i) => currentYear - 4 + i).reverse();
+
     const [amount, setAmount] = useState(0);
     const { execute, loading, error } = useApplyBankedSurplus();
     const [msg, setMsg] = useState('');
@@ -27,8 +30,10 @@ export const ApplyBankForm: React.FC = () => {
 
             <div className="space-y-4">
                 <div>
-                    <label className="block text-[10px] font-bold opacity-50 uppercase mb-1">Ship ID</label>
+                    <label htmlFor="applyShipId" className="block text-[10px] font-bold opacity-50 uppercase mb-1">Ship ID</label>
                     <input
+                        id="applyShipId"
+                        name="applyShipId"
                         required
                         type="text"
                         value={shipId}
@@ -40,19 +45,24 @@ export const ApplyBankForm: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-[10px] font-bold opacity-50 uppercase mb-1">Year</label>
+                        <label htmlFor="applyYear" className="block text-[10px] font-bold opacity-50 uppercase mb-1">Year</label>
                         <select
+                            id="applyYear"
+                            name="applyYear"
                             value={year}
                             onChange={(e) => setYear(Number(e.target.value))}
                             className="w-full bg-white/10 border-transparent rounded-lg focus:ring-indigo-500 text-sm"
                         >
-                            <option value={2025}>2025</option>
-                            <option value={2026}>2026</option>
+                            {years.map(y => (
+                                <option key={y} value={y}>{y}</option>
+                            ))}
                         </select>
                     </div>
                     <div>
-                        <label className="block text-[10px] font-bold opacity-50 uppercase mb-1">Amount (gCO2eq)</label>
+                        <label htmlFor="applyAmount" className="block text-[10px] font-bold opacity-50 uppercase mb-1">Amount (gCO2eq)</label>
                         <input
+                            id="applyAmount"
+                            name="applyAmount"
                             required
                             type="number"
                             value={amount}

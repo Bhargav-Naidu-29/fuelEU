@@ -8,7 +8,8 @@ export interface BankingPort {
 
     bankSurplus(
         shipId: string,
-        year: number
+        year: number,
+        amount: number
     ): Promise<void>;
 
     applyBankedSurplus(

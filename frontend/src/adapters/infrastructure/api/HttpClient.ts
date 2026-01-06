@@ -14,12 +14,7 @@ export class HttpClient implements HttpClientPort {
             : '';
 
         const res = await fetch(`${this.baseUrl}${url}${query}`);
-
-        if (!res.ok) {
-            throw new Error(await res.text());
-        }
-
-        return res.json();
+        return this.handleResponse<T>(res);
     }
 
     async post<T>(
@@ -32,10 +27,32 @@ export class HttpClient implements HttpClientPort {
             body: body ? JSON.stringify(body) : undefined,
         });
 
+        return this.handleResponse<T>(res);
+    }
+
+    private async handleResponse<T>(res: Response): Promise<T> {
         if (!res.ok) {
-            throw new Error(await res.text());
+            const errorText = await res.text();
+            let errorMessage = errorText;
+            try {
+                const errorJson = JSON.parse(errorText);
+                errorMessage = errorJson.error || errorJson.message || errorText;
+            } catch {
+                // Not JSON, use errorText
+            }
+            throw new Error(errorMessage || `Request failed with status ${res.status}`);
         }
 
-        return res.json();
+        if (res.status === 204) {
+            return {} as T;
+        }
+
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            return {} as T;
+        }
+
+        const text = await res.text();
+        return text ? JSON.parse(text) : ({} as T);
     }
 }

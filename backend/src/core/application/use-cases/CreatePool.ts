@@ -4,7 +4,7 @@ import { Year } from '../../domain/value-objects/Year';
 import { PoolingRepository } from '../../ports/outbound/PoolingRepository';
 
 export class CreatePool {
-  constructor(private readonly repository: PoolingRepository) {}
+  constructor(private readonly repository: PoolingRepository) { }
 
   async execute(params: {
     year: Year;
@@ -17,43 +17,31 @@ export class CreatePool {
       throw new Error('Pool sum must be non-negative');
     }
 
-    const sorted = [...members].sort((a, b) => b.cb - a.cb);
+    const membersWithState = members.map(m => ({ ...m, currentCb: m.cb }));
+    const sortedSurplus = membersWithState.filter(m => m.cb > 0).sort((a, b) => b.cb - a.cb);
+    const deficitShips = membersWithState.filter(m => m.cb < 0);
 
-    const poolMembers: PoolMember[] = [];
     let surplusIndex = 0;
+    for (const deficitShip of deficitShips) {
+      let deficit = -deficitShip.cb;
 
-    for (const member of sorted) {
-      let cbAfter = member.cb;
+      while (deficit > 0 && surplusIndex < sortedSurplus.length) {
+        const donor = sortedSurplus[surplusIndex];
+        const transfer = Math.min(donor.currentCb, deficit);
 
-      if (member.cb < 0) {
-        let deficit = -member.cb;
+        donor.currentCb -= transfer;
+        deficitShip.currentCb += transfer;
+        deficit -= transfer;
 
-        while (deficit > 0 && surplusIndex < sorted.length) {
-          const donor = sorted[surplusIndex];
-
-          if (donor.cb <= 0) {
-            surplusIndex++;
-            continue;
-          }
-
-          const transfer = Math.min(donor.cb, deficit);
-
-          donor.cb -= transfer;
-          deficit -= transfer;
-          cbAfter += transfer;
-        }
-
-        if (cbAfter < member.cb) {
-          throw new Error('Deficit ship cannot exit worse');
+        if (donor.currentCb === 0) {
+          surplusIndex++;
         }
       }
-
-      if (member.cb > 0 && cbAfter < 0) {
-        throw new Error('Surplus ship cannot exit negative');
-      }
-
-      poolMembers.push(new PoolMember(member.shipId, member.cb, cbAfter));
     }
+
+    const poolMembers = membersWithState.map(
+      m => new PoolMember(m.shipId, m.cb, m.currentCb)
+    );
 
     const pool = new Pool(year.value, poolMembers);
 

@@ -58,6 +58,10 @@ The following tools were used under a "Human-in-the-loop" model, where AI handle
   - Used to scaffold the UI adapter hooks layer, providing React components with a standardized interface to the use-cases.
   - **No business or regulatory logic** was delegated to AI; hooks only manage async state and orchestrate use-case execution.
   - All generated code was manually reviewed for architectural integrity and strict dependency control.
+  - **Finalization & Data Visualization**:
+    - Used to implement professional data visualizations using `recharts` for the Compare, Banking, and Pooling tabs.
+    - Used to implement robust error handling in the `HttpClient` to manage non-JSON and 204 responses.
+    - Used to refine the Banking API to require explicit `amount` inputs, ensuring the system remains spec-pure and avoids undocumented auto-banking behavior.
 
 ---
 
@@ -94,4 +98,29 @@ To maintain "Intellectual Honesty" and project accuracy, all AI-generated output
 * **Process:** Incremental Git commits were maintained to track the evolution of the codebase from AI-scaffolded structures to logic-complete features.
 
 ---
-**Document Status:** Final | **Project:** FuelEU Maritime Backend
+
+## 6. End-to-End Finalization & Bug Fixes
+
+In the final phase of development, Anti-Gravity AI was used to resolve all remaining frontend and backend issues, ensuring the platform runs end-to-end without errors.
+
+### Backend Fixes
+- **CORS Configuration**: Updated `app.ts` to explicitly allow `http://localhost:5173` and common HTTP methods/headers.
+- **Robust Error Handling**:
+    - Implemented a generic error handler in `app.ts` to ensure all errors return JSON instead of HTML stack traces.
+    - Added a 404 handler for unregistered routes.
+    - Improved `ComplianceController`, `BankingController`, and `PoolingController` to map domain errors (e.g., "No routes found", "Insufficient surplus") to appropriate HTTP 400/409/404 statuses.
+- **API Contract Alignment**:
+    - Refactored `RoutesController.compare` to return a flat JSON structure matching the frontend `RoutesApi` expectation, including full route data to prevent blank screen crashes.
+    - Standardized all controller methods to use standard class methods instead of arrow functions to improve linting and return-path safety.
+- **Business Logic Repair**: Refactored `CreatePool` use case to correctly track `cbAfter` for all members, ensuring that donors' final balances reflect the transfers made.
+
+### Frontend Fixes
+- **API Resilience**: Enhanced `ApiClient` to safely handle non-JSON responses and distinguish between empty (204) and faulty responses.
+- **UI Guards & States**:
+    - Added comprehensive guards and optional chaining in `CompareTable` to prevent crashes when data is missing.
+    - Implemented loading, empty, and error states across `BankingSummary`, `CompareTable`, and `RoutesTable`.
+    - Fixed Recharts rendering by ensuring all containers use `ResponsiveContainer` and have valid dimensions.
+- **Interaction Wiring**: Verified that all "Compare", "Set Baseline", "Bank", and "Apply" buttons are correctly wired to their respective hooks and provide success/error feedback.
+
+---
+**Document Status:** Final | **Project:** FuelEU Maritime Platform

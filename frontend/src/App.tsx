@@ -7,7 +7,7 @@ import { CreatePoolForm } from './adapters/ui/components/pooling';
 
 export default function App() {
     const [activeTab, setActiveTab] = useState('routes');
-    const [filters, setFilters] = useState({ vesselType: '', shipId: '' });
+    const [filters, setFilters] = useState({ vesselType: '', shipId: '', year: new Date().getFullYear() });
 
     const tabs = [
         { id: 'routes', label: 'Monitor Routes' },

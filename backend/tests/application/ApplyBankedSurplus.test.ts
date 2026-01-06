@@ -12,6 +12,7 @@ describe('ApplyBankedSurplus', () => {
       save: jest.fn(),
       findTotalBankedForShip: jest.fn().mockResolvedValue(100),
       applyBankedAmount: jest.fn().mockResolvedValue(undefined),
+      findRecordsByShipAndYear: jest.fn().mockResolvedValue([]),
     };
     useCase = new ApplyBankedSurplus(mockRepository);
   });

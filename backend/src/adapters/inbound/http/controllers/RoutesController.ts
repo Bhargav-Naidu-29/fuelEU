@@ -11,7 +11,7 @@ export class RoutesController {
         private readonly compareRoutes: CompareRoutes,
     ) { }
 
-    getAll = async (req: Request, res: Response) => {
+    async getAll(_req: Request, res: Response) {
         const routes = await this.getRoutes.execute();
         const response = routes.map((r) => ({
             routeId: r.routeId,
@@ -25,9 +25,9 @@ export class RoutesController {
             isBaseline: r.isBaseline,
         }));
         res.json(response);
-    };
+    }
 
-    setBaseline = async (req: Request, res: Response) => {
+    async setBaseline(req: Request, res: Response) {
         const { routeId } = req.params;
         const { year } = req.body;
 
@@ -38,14 +38,14 @@ export class RoutesController {
 
         try {
             await this.setBaselineRoute.execute(routeId, new Year(year));
-            res.sendStatus(200);
+            res.status(200).json({ message: 'Baseline set' });
         } catch (e) {
             console.error(e);
             res.status(500).json({ error: 'Failed to set baseline' });
         }
-    };
+    }
 
-    compare = async (req: Request, res: Response) => {
+    async compare(req: Request, res: Response) {
         const { routeId, year } = req.query;
 
         if (!routeId || !year) {
@@ -60,23 +60,38 @@ export class RoutesController {
             );
 
             res.json({
-                route: {
-                    routeId: result.route.routeId,
-                    ghgIntensity: result.route.ghgIntensity.value,
-                },
                 baseline: {
                     routeId: result.baseline.routeId,
+                    vesselType: result.baseline.vesselType,
+                    fuelType: result.baseline.fuelType,
+                    year: result.baseline.year.value,
                     ghgIntensity: result.baseline.ghgIntensity.value,
+                    fuelConsumption: result.baseline.fuelConsumption,
+                    distance: result.baseline.distance,
+                    totalEmissions: result.baseline.totalEmissions,
+                    isBaseline: result.baseline.isBaseline,
                 },
-                comparison: result.comparison,
+                comparison: {
+                    routeId: result.route.routeId,
+                    vesselType: result.route.vesselType,
+                    fuelType: result.route.fuelType,
+                    year: result.route.year.value,
+                    ghgIntensity: result.route.ghgIntensity.value,
+                    fuelConsumption: result.route.fuelConsumption,
+                    distance: result.route.distance,
+                    totalEmissions: result.route.totalEmissions,
+                    isBaseline: result.route.isBaseline,
+                },
+                percentDiff: result.comparison.percentDiff,
+                compliant: result.comparison.compliant,
             });
         } catch (e: any) {
-            console.error(e);
+            console.error('[RoutesController.compare]', e.message);
             if (e.message === 'Route not found' || e.message === 'No baseline set for this year') {
                 res.status(404).json({ error: e.message });
             } else {
                 res.status(500).json({ error: 'Comparison failed' });
             }
         }
-    };
+    }
 }
