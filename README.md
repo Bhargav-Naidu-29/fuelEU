@@ -79,16 +79,16 @@ This project was built to satisfy the following strict requirements:
 
 ### 1. Monitor Routes (Combined View)
 *View aggregated performance across all years along with individual voyage details. Default view shows all routes.*
-![Monitor Routes](file:///C:/Users/palav/.gemini/antigravity/brain/4dcc6bbc-80d5-497d-8492-14f68a2b3cfd/monitor_routes_combined_updated_1767711027520.png)
+![Monitor Routes](photos/Screenshot%202026-01-06%20211217.png)
 
 ### 2. Banking Compliance Surplus
 *Manage compliance credit banking with a secure, regulated interface. Features validated inputs.*
-![Banking Interface](file:///C:/Users/palav/.gemini/antigravity/brain/4dcc6bbc-80d5-497d-8492-14f68a2b3cfd/banking_tab_1767710914868.png)
+![Banking Interface](photos/Screenshot%202026-01-06%20211421.png)
 
 ### 3. Fleet Pooling
 *Form compliance pools and visualize the contribution of each vessel. Real-time validation of pool health.*
-![Pooling Interface](file:///C:/Users/palav/.gemini/antigravity/brain/4dcc6bbc-80d5-497d-8492-14f68a2b3cfd/pooling_tab_1767710926305.png)
+![Pooling Interface](photos/Screenshot%202026-01-06%20211603.png)
 
 ### 4. Compliance Comparison
 *Decision support tool for annual compliance planning. Compare Ship Performance vs Baseline.*
-![Comparison Tool](file:///C:/Users/palav/.gemini/antigravity/brain/4dcc6bbc-80d5-497d-8492-14f68a2b3cfd/compare_tab_1767710937572.png)
+![Comparison Tool](photos/Screenshot%202026-01-06%20211309.png)
