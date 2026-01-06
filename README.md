@@ -37,8 +37,6 @@ This project was built to satisfy the following strict requirements:
 
 2.  **Install Dependencies**:
     ```bash
-    # Install root dependencies
-    npm install
     
     # Install Backend dependencies
     cd backend
