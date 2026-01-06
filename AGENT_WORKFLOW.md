@@ -54,8 +54,9 @@ The following tools were used under a "Human-in-the-loop" model, where AI handle
 
 - **Anti-Gravity AI**
   - Used for scaffolding the directory structure and implementing shared UI primitives (`Button`, `Table`, `Loader`) and pure utility functions (`formatNumber`, `formatPercentage`).
-  - **No business or domain logic** was generated; all components and utilities are presentational and generic.
-  - All code was manually reviewed to ensure zero coupling with core domain logic.
+  - Used to scaffold the application use-cases layer (Routes, Compliance, Banking, Pooling), ensuring strict hexagonal orchestration.
+  - **No business or regulatory logic** was delegated to AI; use-cases only orchestrate calls to the backend source of truth via ports.
+  - All generated code was manually reviewed for architectural integrity and strict dependency control.
 
 ---
 
