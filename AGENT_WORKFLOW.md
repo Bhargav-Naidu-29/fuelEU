@@ -44,6 +44,19 @@ The following tools were used under a "Human-in-the-loop" model, where AI handle
 * **Result:** Generated a Prisma adapter with `save`, `findTotalBankedForShip`, and `applyBankedAmount`.
 * **Corrections Applied:** Fixed type mismatches (specifically `Year` vs `number`), ensured `camelCase` consistency, and verified that no domain rules leaked into the persistence layer.
 
+> This workflow ensures transparency, correctness, and professional engineering judgment aligned with real-world production standards.
+
+---
+
+## Frontend — AI Agent Usage
+
+### Agents Used
+
+- **Anti-Gravity AI**
+  - Used for scaffolding the directory structure and implementing shared UI primitives (`Button`, `Table`, `Loader`) and pure utility functions (`formatNumber`, `formatPercentage`).
+  - **No business or domain logic** was generated; all components and utilities are presentational and generic.
+  - All code was manually reviewed to ensure zero coupling with core domain logic.
+
 ---
 
 ## 3. Validation, Corrections & Logic Control
