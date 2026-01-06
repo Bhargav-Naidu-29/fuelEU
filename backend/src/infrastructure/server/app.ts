@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { ComplianceController } from '@/adapters/inbound/http/controllers/ComplianceController';
 import { ComputeComplianceBalance } from '@/core/application/use-cases/ComputeComplianceBalance';
 import { GHGIntensity } from '@/core/domain/value-objects/GHGIntensity';
@@ -20,6 +21,7 @@ import { ComputeComplianceFromRoutes } from '@/core/application/use-cases/Comput
 
 export function createApp() {
   const app = express();
+  app.use(cors());
   app.use(express.json());
 
   const repository = new PrismaComplianceRepository();

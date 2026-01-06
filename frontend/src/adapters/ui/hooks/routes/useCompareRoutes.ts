@@ -13,17 +13,16 @@ export function useCompareRoutes() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const execute = useCallback(async (routeId: string, year: number) => {
+    const execute = useCallback(async (id: string, y: number) => {
         setLoading(true);
         setError(null);
         try {
             const useCase = new CompareRoutes(routesApi);
-            const result = await useCase.execute(routeId, year);
+            const result = await useCase.execute(id, y);
             setData(result);
             return result;
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Unknown error');
-            throw err;
         } finally {
             setLoading(false);
         }

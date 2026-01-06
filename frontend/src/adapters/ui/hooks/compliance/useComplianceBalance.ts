@@ -18,7 +18,6 @@ export function useComplianceBalance() {
             return result;
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Unknown error');
-            throw err;
         } finally {
             setLoading(false);
         }

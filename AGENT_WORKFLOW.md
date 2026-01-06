@@ -55,7 +55,8 @@ The following tools were used under a "Human-in-the-loop" model, where AI handle
 - **Anti-Gravity AI**
   - Used for scaffolding the directory structure and implementing shared UI primitives (`Button`, `Table`, `Loader`) and pure utility functions (`formatNumber`, `formatPercentage`).
   - Used to scaffold the application use-cases layer (Routes, Compliance, Banking, Pooling), ensuring strict hexagonal orchestration.
-  - **No business or regulatory logic** was delegated to AI; use-cases only orchestrate calls to the backend source of truth via ports.
+  - Used to scaffold the UI adapter hooks layer, providing React components with a standardized interface to the use-cases.
+  - **No business or regulatory logic** was delegated to AI; hooks only manage async state and orchestrate use-case execution.
   - All generated code was manually reviewed for architectural integrity and strict dependency control.
 
 ---
